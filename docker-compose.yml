@@ -1,0 +1,38 @@
+version: '3.4'
+services:
+  db:
+    image: postgres:12-alpine
+    environment:
+      - POSTGRES_PASSWORD=foobar123
+    volumes:
+      - db-data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:alpine
+
+  app:
+    build:
+      context: .
+    volumes:
+      - .:/usr/src/app
+      - ./vendor:/usr/local/bundle
+    environment:
+      DOCROOT: /usr/src/app
+    ports:
+      - "3000"
+    networks:
+      app_net:
+        ipv4_address: 172.16.237.11
+    links:
+      - db
+      - redis
+
+volumes:
+  db-data:
+
+networks:
+  app_net:
+    ipam:
+      driver: default
+      config:
+        - subnet: "172.16.237.0/24"
