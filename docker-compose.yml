@@ -15,7 +15,6 @@ services:
       context: .
     volumes:
       - .:/usr/src/app
-      - ./vendor:/usr/local/bundle
     environment:
       DOCROOT: /usr/src/app
     ports:
