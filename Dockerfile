@@ -15,15 +15,22 @@ RUN useradd --uid ${USER_UID} --create-home rails
 
 WORKDIR /usr/src/app
 
-COPY --chown=${USER_UID} Gemfile* ./
-
 RUN chgrp -R rails /usr/src/app
+RUN chmod 775 /usr/src/app
+
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod 0755 /entrypoint.sh
+ENTRYPOINT ["/entrypoint.sh"]
+
+WORKDIR /usr/src/app2
+
+RUN chgrp -R rails /usr/src/app2
+RUN chmod 775 /usr/src/app2
 
 USER rails
+RUN if [ ! -f Gemfile ]; then bundle init && bundle add rails && rails new .; fi
 
-RUN ls -al
 RUN bundle install
-COPY --chown=${USER_UID} . .
 
 EXPOSE 3000
 CMD ["rails", "server", "-b", "0.0.0.0"]
